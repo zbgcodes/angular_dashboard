@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Personal Dashboard</title>
+  
+	<!-- Scripts -->
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js">
+	</script>
+	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.js'>
+	</script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-resource.min.js">
+	</script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/angular-ui/0.4.0/angular-ui.js'>
+	</script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-sanitize.js">
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.17/angular-filter.js">
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.min.js">
+	</script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js">
+	</script>
+	<script src="https://kit.fontawesome.com/132f414807.js" crossorigin="anonymous">
+	</script>
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+	<link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Roboto Slab'>
+	<link rel="stylesheet" href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css'>
+	<link rel="stylesheet" href="styles.css">
+  
+  <!-- ANGULAR SCRIPT -->
+	<script>
+		<!-- dashboardApp (Angular) -->
+		var scopeLengths;
+		var app = angular.module('dashboardApp', ['ngSanitize','ui.bootstrap','angular.filter'])
+				
+		app.controller('mainController', function($scope, $http) {
+			$scope.tabConfig = [
+				{id:0,label:'Home',icon:''},
+				{id:1,label:'Knowledgebase',icon:''},
+				{id:2,label:'Documentation',icon:''},
+				{id:3,label:'Training Record',icon:''},
+				{id:4,label:'Links',icon:''},
+				{id:5,label:'Contacts',icon:''},
+				{ic:6,label:'Settings',icon:''}
+			];
+			
+			$scope.sortTypeLinks = 'cat'; 
+			$scope.sortTypeCont = 'cat'; 
+			$scope.sortTypeKB = 'id'; 
+			$scope.sortTypeQL = 'desc';
+			$scope.sortTypePBI = 'desc';
+			$scope.sortReverse = false;  // set the default sort order
+			$scope.searchHome = 'q'   
+			$scope.searchLinks = '';     
+			$scope.searchCont = '';     
+			$scope.searchKB = '';     
+			$scope.kbID = 0; // set initial KB ID
+			$scope.hexCode = '000000';
+			
+			$scope.quickNotes = [];
+			if (localStorage.getItem('quickNote') != null) {
+				$scope.quickNotes = JSON.parse(localStorage.getItem('quickNote'));
+			}
+			
+			$scope.quickNoteSave = function() {
+				var noteText = document.getElementById('quickNote').value;
+				$scope.quickNotes.push(noteText);
+				localStorage.setItem('quickNote', JSON.stringify($scope.quickNotes));
+			}
+			
+			$scope.quickNoteDelete = function(item) {
+				var storedNotes = JSON.parse(localStorage.getItem('quickNote'));
+				var qnID = item;
+				storedNotes.splice(qnID, 1);
+				localStorage.setItem('quickNote', JSON.stringify(storedNotes));
+				$scope.quickNotes = JSON.parse(localStorage.getItem('quickNote'));
+			}
+			
+			$scope.quickNoteItem = new Object();
+			$scope.selectedQuickNote = function(item) {
+				var storedNotes = JSON.parse(localStorage.getItem('quickNote'));
+				var qnID = item;
+				storedNotes.splice(qnID, 0);
+					$scope.quickNoteItem["id"] = qnID;
+					$scope.quickNoteItem["note"] = storedNotes[qnID];
+			};						
+			
+			$scope.open = function(param) {
+				if (param == 0) {
+					//do nothing
+				} else {
+					$scope.kbID = param;
+					document.getElementById('boxModal').style = "display: block; z-index: 10;";	
+				}
+			}
+			
+			$scope.close = function() {
+				document.getElementById('boxModal').style = "display: none; z-index: 0;";
+			}
+
+			$scope.linkCat = ['Category H','Category I','Category J','Category K'];
+			$scope.linkQCount = function() {
+				var dataTab4 = $scope.dataTab4;
+				var qCount = 0;
+				for (i = 0; i < dataTab4.length; i++) {
+					if  (dataTab4[i].q = true) {
+						qCount =+ 1;
+					}
+				}
+				return qCount;
+			}
+			
+			$scope.PBIList = [
+				{desc:'Custom Tab Link #1',url:'#'},
+				{desc:'Custom Tab Link #2',url:'#'},
+				{desc:'Custom Tab Link #3',url:'#'}
+				];
+				
+			$scope.contactCat = ['Internal','External'];
+			
+			$scope.dataTab0 = [];
+			
+			$scope.dataTab1 = [
+				{id:1,sw:0,f:false,mo:'Module A',is:'Issue',so:'Solution'},
+				{id:2,sw:1,f:false,mo:'Module A',is:'Issue',so:'Solution'},
+				{id:3,sw:1,f:false,mo:'Module B',is:'Issue',so:'Solution'},
+				{id:4,sw:1,f:false,mo:'Module B',is:'Issue',so:'Solution'},
+				{id:5,sw:1,f:false,mo:'Module C',is:'Issue',so:'Solution'},
+				{id:6,sw:1,f:false,mo:'Module C',is:'Issue',so:'Solution'},
+			];
+			
+			$scope.dataTab2 = [
+				{id:1,f:false,title:'Document #1',link:'#'},
+				{id:2,f:false,title:'Document #2',link:'#'},
+				{id:3,f:false,title:'Document #3',link:'#'},
+				{id:4,f:false,title:'Document #4',link:'#'},
+				{id:5,f:false,title:'Document #5',link:'#'}
+			];
+			
+			$scope.dataTab3 = [
+				{id:1,title:'Course #1',cdate:'2019-12-30T12:00:00Z',freq:3},
+				{id:2,title:'Course #2',cdate:'2019-12-30T12:00:00Z',freq:1},
+				{id:3,title:'Course #3',cdate:'2019-12-31T12:00:00Z',freq:3},
+				{id:4,title:'Course #4',cdate:'2020-08-10T13:20:00Z',freq:1},
+				{id:5,title:'Course #5',cdate:'2019-12-31T12:00:00Z',freq:3},
+				{id:6,title:'Course #6',cdate:'2019-12-30T12:00:00Z',freq:3},
+				{id:7,title:'Course #7',cdate:'2017-05-03T12:00:00Z',freq:3}
+			];
+			
+			$scope.dataTab3Due = function(date,years) {
+				var result = new Date(date);
+				var days = 365 * years;
+				result.setDate(result.getDate() + days);
+				return result;
+			}
+			
+			$scope.dataTab4 = [
+				{desc:'Link #1',q:true,cat:'Category A',url:'#',info:'Link Description',icon:'fa fa-headset fa-2x'},
+				{desc:'Link #2',q:true,cat:'Category A',url:'#',info:'Link Description',icon:'fa fa-laptop-house fa-2x'},
+				{desc:'Link #3',q:false,cat:'Category A',url:'#',info:'Link Description',icon:'fa fa-headset fa-2x'},
+				{desc:'Link #4',q:true,cat:'Category B',url:'#',info:'Link Description',icon:'fa fa-user-lock fa-2x'},
+				{desc:'Link #5',q:false,cat:'Category B',url:'#',info:'Link Description',icon:'fa fa-headset fa-2x'}
+			];
+			
+			$scope.dataTab4ArrLen = $scope.dataTab4.length / 2;
+			$scope.dataTab4Arr = Array.apply(null, {length: $scope.dataTab4.length/2}).map(Number.call, Number);
+			
+			$scope.dataTab5 = [
+				{cat:1,loc:1,name:'Contact #1',tel:'123456',mob:'123456',email:'email@address.net'},
+				{cat:1,loc:1,name:'Contact #2',tel:'123456',mob:'123456',email:'email@address.net'},
+				{cat:1,loc:1,name:'Contact #3',tel:'123456',mob:'123456',email:'email@address.net'},
+				{cat:2,loc:2,name:'Contact #4',tel:'123456',mob:'123456',email:'email@address.net'},
+				{cat:2,loc:2,name:'Contact #5',tel:'123456',mob:'123456',email:'email@address.net'},
+				{cat:1,loc:1,name:'Contact #6',tel:'123456',mob:'123456',email:'email@address.net'}
+			];
+			
+			$scope.dataTab6 = [
+				{name:'username',value:'Matt'},
+				{name:'bgcolor',value:'white'},
+				{name:'font',value:'roboto'}
+			];
+			
+			
+			//KB Software Categories
+			$scope.kbSoftware = ['Category X','Category Y','Category Z'];
+
+			//Function to pass KB item ID to the Modal
+			$scope.kbItem = [""];
+			$scope.selectedKBItem = function(item) {
+				kbID = item - 1;
+				$scope.kbItem = [""];
+				$scope.kbItem = $scope.dataTab1[kbID];
+			};
+			
+			$scope.tOverdue = function(date,years) {
+				var result = new Date(date);
+				var today = new Date();
+				var days = 365 * years;
+				var overdue;
+				result.setDate(result.getDate() + days);
+				if (result > today) {
+					overdue = false;
+				} else {
+					overdue = true;
+					console.log(date + " / " + result.getDate());
+				}
+				return overdue;
+			}
+			
+			$scope.dashVer = function() {
+				//var lastMod = new Date(document.lastModified);
+				//var lmDate = lastMod.getDate() + "" + (lastMod.getMonth() + 1) + "" + lastMod.getFullYear();
+				//var lmTime = lastMod.getHours() + "" + lastMod.getMinutes();
+				//var ver = "3." + lmDate + "." + lmTime;
+				ver = "0.1a";
+				return ver;
+			}
+			
+			});
+	</script>
+	<script>
+		<!-- accordion -->
+	function accordion(divID) {
+		event.preventDefault(); //stops page jump
+		var divs = ["boxTab0","boxTab1","boxTab2","boxTab3","boxTab4","boxTab5","boxTab6"];
+		var dataLabels = ["dataTab0","dataTab1","dataTab2","dataTab3","dataTab4","dataTab5","dataTab6"];
+		var visibleDiv = null;
+		
+		if (visibleDiv === divID) {
+				visibleDiv = null;
+			} else {
+				visibleDiv = divID;
+			}
+			
+		hideNonVisibleDivs();
+		
+		function hideNonVisibleDivs() {
+			var i, divID, div;
+			for (i = 0; i < divs.length; i++) {
+				divID = divs[i];
+				accordionButton = "acc" + divs[i];
+				div = document.getElementById(divID);
+				menuItem = document.getElementById(accordionButton);
+				
+				if (visibleDiv === divID) {
+					div.style.display = "block";
+					menuItem.style.background = "var(--accent-color);";
+				} else {
+					div.style.display = "none";	
+					menuItem.style.background = "";
+				}
+			}
+		}
+	}
+	</script>
+</head>
+
+<body>
+	<div class="container-fluid" ng-app="dashboardApp" ng-controller="mainController">
+		<div class="row">
+			<!--------------------------------------------------------------------------------------------------- ACCORDION -->
+			<div class="col-lg-12">
+				<div class="accMenu">
+					<nav class="navbar navbar-default">
+						<div class="container-fluid">
+							<div class="navbar-header">
+								<a class="navbar-brand" href="#">{{ dataTab6[0].value }}'s Dashboard</a>
+							</div>
+							<ul class="nav navbar-nav">
+								<li id="btnboxTab0">
+									<a id="accboxTab0" href="#" onclick="accordion('boxTab0')" title="{{ tabConfig[0].label }}">{{ tabConfig[0].label
+										}}</a>
+								</li>
+
+								<li id="btnboxTab1">
+									<a id="accboxTab1" href="#btnboxTab1" onclick="accordion('boxTab1')" title="{{ tabConfig[1].label }}">{{ tabConfig[1].label
+										}}</a>
+								</li>
+
+								<li id="btnboxTab2">
+									<a id="accboxTab2" href="#" onclick="accordion('boxTab2')" title="{{ tabConfig[2].label }}">{{ tabConfig[2].label
+										}}</a>
+								</li>
+
+								<li id="btnboxTab3">
+									<a id="accboxTab3" href="#" onclick="accordion('boxTab3')" title="{{ tabConfig[3].label }}">{{ tabConfig[3].label
+										}}</a>
+								</li>
+
+								<li id="btnboxTab4">
+									<a id="accboxTab4" href="#" onclick="accordion('boxTab4')" title="{{ tabConfig[4].label }}">{{ tabConfig[4].label
+										}}</a>
+								</li>
+
+								<li id="btnboxTab5">
+									<a id="accboxTab5" href="#" onclick="accordion('boxTab5')" title="{{ tabConfig[5].label }}">{{ tabConfig[5].label
+										}}</a>
+								</li>
+
+								<li id="btnboxTab6">
+									<a id="accboxTab6" href="#" onclick="accordion('boxTab6')" title="{{ tabConfig[6].label }}">{{ tabConfig[6].label
+										}}</a>
+								</li>
+							</ul>
+						</div>
+					</nav>
+				</div>
+				<div class="pageContent">
+					<!--------------------------------------------------------------------------------------------------- HOME -->
+					<div class="box" id="boxTab0">
+						<div class="sectionHeader">
+							<h1><i class="fas fa-home"></i> {{ tabConfig[0].label }}</h1></div>
+					<h1><i class="fas fa-bolt"></i> Quick Links</h1>
+						<div class="quickLinkContainer">
+							<div class="quickLinkItem" ng-repeat="entry in dataTab4 | orderBy:sortTypeQL:sortReverse | filter:{q:true}">
+								<i class="{{ entry.icon }}" aria-hidden="true"></i>
+								<br />
+								<a href="{{ entry.url }}" target="_blank">{{ entry.desc }}</a>
+							</div>
+						</div>
+						<p class="clear" />
+						 <br />
+					<h1><i class="fas fa-bolt"></i> Quick Notes</h1>
+						<table>
+							<thead>
+								<tr>
+									<td>Note</td>
+									<td>Manage</td>
+								</tr>
+							</thead>
+						<tbody>
+							<tr id="tableRow" ng-repeat="entry in quickNotes">
+								<td>{{ entry }}</td>
+								<td>
+									<a href="#" ng-click="selectedQuickNote(quickNotes.indexOf(entry))" data-toggle="modal" data-target="#quickNoteModal" title="Edit Entry {{ quickNotes.indexOf(entry) }}">
+										<i class="fas fa-edit"></i>
+									</a>
+								</td>
+							</tr>
+						</tbody>
+						 </table>
+						 <br />
+						 <div class="input-group">
+							<input type="text" class="form-control" id="quickNote" ui-keypress="{13:'quickNoteSave()'}">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="button" ng-click="quickNoteSave()">Add Note</button>
+							</span>
+						</div>
+				<!-- Modal : Quick Note -->
+				<div class="modal fade" id="quickNoteModal" role="dialog">
+					<div class="modal-dialog modal-lg" ng-model="toDoItem">
+						<!-- Modal content-->
+						<div class="modal-content">
+							<div class="modal-header">
+								<h4 class="modal-title" id="bold">Quick Note ({{ quickNoteItem.id }})</h4>
+							</div>
+							<div class="modal-body">
+								<div class="kbModalIssue">
+									<span id="quickNoteDesc" >{{ quickNoteItem.note }}</span>
+								</div>								
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="quickNoteDelete(quickNoteItem.id)">
+									<i class="fas fa-trash-alt"></i> Delete
+								</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>						
+				</div>
+
+<!--------------------------------------------------------------------------------------------------- KNOWLEDGEBASE -->
+			<div class="box" id="boxTab1">
+				<div class="sectionHeader">
+					<div class="sectionHeaderLeft">
+						<h1><i class="fas fa-brain"></i> {{ tabConfig[1].label }}</h1>
+					</div>
+					<div class="sectionHeaderRight">
+						<input type="text" class="form-control input-sm" placeholder="Search Issues" ng-model="searchKB">
+					</div>
+				</div>
+				<h1><i class="fas fa-heart"></i> Favourites</h1>
+				<table>
+				<thead>
+					<tr>
+						<td>
+							<a href="#" ng-click="sortTypeKB = 'sw'; sortReverse = !sortReverse">
+							Entry ID 
+							<span ng-show="sortTypeKB == 'sw' && !sortReverse" class="fa fa-caret-down"></span>
+							<span ng-show="sortTypeKB == 'sw' && sortReverse" class="fa fa-caret-up"></span>
+							</a>
+						</td>
+						<td>
+							<a href="#" ng-click="sortTypeKB = 'mo'; sortReverse = !sortReverse">
+							Area/Module 
+							<span ng-show="sortTypeKB == 'mo' && !sortReverse" class="fa fa-caret-down"></span>
+							<span ng-show="sortTypeKB == 'mo' && sortReverse" class="fa fa-caret-up"></span>
+							</a>
+						</td>							
+						<td>Issue</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="tableRow" ng-repeat="entry in dataTab1 | orderBy:sortTypeKB:sortReverse | filter:{f:true}">
+							<td width="100">{{ entry.id }}</span></td>
+							<td width="150">{{ entry.mo }}</td>
+							<td width="550"><a href="#" ng-click="selectedKBItem(entry.id)" data-toggle="modal" data-target="#kbModal" title="View Entry {{ entry.id }}">{{ entry.is }}</a></td>
+					 </tr>
+				</tbody>
+			</table>
+			<h1><i class="fas fa-book"></i> All Articles</h1>			
+			<table>
+				<thead>
+					<tr>
+						<td>
+							<a href="#" ng-click="sortTypeKB = 'sw'; sortReverse = !sortReverse">
+							Entry ID 
+							<span ng-show="sortTypeKB == 'sw' && !sortReverse" class="fa fa-caret-down"></span>
+							<span ng-show="sortTypeKB == 'sw' && sortReverse" class="fa fa-caret-up"></span>
+							</a>
+						</td>
+						<td>
+							<a href="#" ng-click="sortTypeKB = 'mo'; sortReverse = !sortReverse">
+							Area/Module 
+							<span ng-show="sortTypeKB == 'mo' && !sortReverse" class="fa fa-caret-down"></span>
+							<span ng-show="sortTypeKB == 'mo' && sortReverse" class="fa fa-caret-up"></span>
+							</a>
+						</td>							
+						<td>Issue</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="tableRow" ng-repeat="entry in dataTab1 | orderBy:sortTypeKB:sortReverse | filter:searchKB" ng-hide="$first">
+							<td width="100">{{ entry.id }}</span></td>
+							<td width="150">{{ entry.mo }}</td>
+							<td width="550"><a href="#" ng-click="selectedKBItem(entry.id)" data-toggle="modal" data-target="#kbModal" title="View Entry {{ entry.id }}">{{ entry.is }}</a></td>
+					 </tr>
+				</tbody>
+			</table>
+			<!-- Modal : Knowledgebase Entry Detail -->
+			<div class="modal fade" id="kbModal" role="dialog">
+					<div class="modal-dialog modal-lg" ng-model="kbItem">
+						<!-- Modal content-->
+						<div class="modal-content">
+							<div class="modal-header">
+								<h4 class="modal-title" id="bold">Knowledgebase Entry #{{ kbItem.id }}</h4>
+								<p>{{ kbSoftware[kbItem.sw] }} // {{ kbItem.mo }}</p>
+							</div>
+							<div class="modal-body">
+								<div class="kbModalIssue">
+									<p>Issue:</p>
+									<span ng-bind-html="kbItem.is">{{ kbItem.is }}</span>
+								</div>
+								<div class="kbModalSolution">
+									<p>Solution:</p>
+									<span ng-bind-html="kbItem.so">{{ kbItem.so }}</span>	
+								</div>
+								<div class="kbModalLink">
+									<p>Related Links:</p>
+									<span><a href="{{ kbItem.link }}" title="Visit {{ kbItem.link }}" target="_blank">{{ kbItem.link }}</a></span>	
+								</div>									
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+<!--------------------------------------------------------------------------------------------------- GUIDANCE DOCUMENTS -->
+			<div class="box" id="boxTab2">		
+				<div class="sectionHeader">
+					<div class="sectionHeaderLeft">
+						<h1><i class="fas fa-book"></i> {{ tabConfig[2].label }}</h1>
+					</div>
+					<div class="sectionHeaderRight">
+						<button class="btn btn-primary" type="button" >Add Entry</button>
+					</div>				
+				</div>	
+				<h1><i class="fas fa-heart"></i> Favourites</h1>				
+				<table>
+				<thead>
+					<tr>
+						<td>Title</td>								
+						<td>Read</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="tableRow" ng-repeat="doc in dataTab2 | filter:{f:true}">
+						<td width="600"><a href="{{ doc.link }}">{{ doc.title }}</a></td>
+						<td width="50">{{ doc.read }}</td>
+					 </tr>
+				</tbody>
+				</table>
+				<h1><i class="fas fa-book"></i> All Documents</h1>
+				<table>
+				<thead>
+					<tr>
+						<td>Title</td>								
+						<td>Read</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="tableRow" ng-repeat="doc in dataTab2">
+						<td width="600"><a href="{{ doc.link }}">{{ doc.title }}</a></td>
+						<td width="50">{{ doc.read }}</td>
+					 </tr>
+				</tbody>
+				</table>
+			</div>		
+<!--------------------------------------------------------------------------------------------------- dataTab3 -->
+			<div class="box" id="boxTab3">		
+				<div class="sectionHeader">
+					<div class="sectionHeaderLeft">
+						<h1><i class="fas fa-book"></i> {{ tabConfig[3].label }}</h1>
+					</div>
+					<div class="sectionHeaderRight">
+						<button class="btn btn-primary" type="button" >Add Entry</button>
+					</div>				
+				</div>		
+				<div class="subHeading">
+					<p>Subheading Text Goes Here</p>
+				</div>
+				<table>
+				<thead>
+					<tr>
+						<td>Title</td>								
+						<td>Completion Date</td>
+						<td>Frequency</td>
+						<td>Renewal Date</td>
+						<td>Valid?</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="tableRow" ng-repeat="course in dataTab3">
+						<td width="600">{{ course.title }}<br /></td>
+						<td width="50">{{ course.cdate | date:'MM/dd/yyyy' }}</td>
+						<td width="50">{{ course.freq }} Years</td>
+						<td width="50">{{ dataTab3Due(course.cdate,course.freq) | date:'dd/MM/yyyy' }}</td>
+						<td width="50">
+							<i ng-if="tOverdue(course.cdate,course.freq) == true" id="tOverdueTrue" class="fas fa-exclamation-circle" title="dataTab3 Overdue"></i>
+							<i ng-if="tOverdue(course.cdate,course.freq) == false" id="tOverdueFalse" class="fas fa-check-circle" title="dataTab3 Valid until Renewal Date"></i>
+						</td>
+					 </tr>
+				</tbody>
+				</table>
+			</div>				
+<!--------------------------------------------------------------------------------------------------- USEFUL LINKS -->
+			<div class="box" id="boxTab4">
+				<div class="sectionHeader">
+					<div class="sectionHeaderLeft">
+						<h1><i class="fas fa-link"></i> {{ tabConfig[4].label }}</h1>
+					</div>
+					<div class="sectionHeaderRight">
+						<button class="btn btn-primary" type="button" >Add Entry</button>
+					</div>				
+				</div>						
+				<table>
+				<thead>
+					<tr>
+						<td>
+							<a href="#" ng-click="sortTypeLinks = 'cat'; sortReverse = !sortReverse">
+							Category 
+							<span ng-show="sortTypeLinks == 'cat' && !sortReverse" class="fa fa-caret-down"></span>
+							<span ng-show="sortTypeLinks == 'cat' && sortReverse" class="fa fa-caret-up"></span>
+							</a>
+						</td>								
+						<td>
+							<a href="#" ng-click="sortTypeLinks = 'desc'; sortReverse = !sortReverse">
+							Description 
+							<span ng-show="sortTypeLinks == 'desc' && !sortReverse" class="fa fa-caret-down"></span>
+							<span ng-show="sortTypeLinks == 'desc' && sortReverse" class="fa fa-caret-up"></span>
+							</a>
+						</td>						
+						<td>Info</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="tableRow" ng-repeat="entry in dataTab4 | orderBy:sortTypeLinks:sortReverse | filter:searchLinks">
+						<td width="50">{{ entry.cat }}</td>
+						<td width="200"><a href="{{ entry.url }}" target="_blank">{{ entry.desc }}</a></td>
+						<td width="400">{{ entry.info }}</td>
+					 </tr>
+				</tbody>
+				</table>
+			</div>			
+<!--------------------------------------------------------------------------------------------------- CONTACTS  -->			
+			<div class="box" id="boxTab5">
+				<div class="sectionHeader">
+					<div class="sectionHeaderLeft">
+						<h1><i class="fas fa-phone"></i> {{ tabConfig[5].label }}</h1>
+					</div>
+					<div class="sectionHeaderRight">
+						<button class="btn btn-primary" type="button" >Add Entry</button>
+					</div>				
+				</div>								
+				<table>
+				<thead>
+					<tr>
+						<td width="120px" class="middle">Type</td>
+						<td>
+							<a href="#" ng-click="sortTypeCont = 'name'; sortReverse = !sortReverse">
+							Name 
+							<span ng-show="sortTypeCont == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+							<span ng-show="sortTypeCont == 'name' && sortReverse" class="fa fa-caret-up"></span>
+							</a>
+						</td>						
+						<td>Telephone No.</td>
+						<td>Mobile No.</td>
+						<td>Email Address</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="tableRow" ng-repeat="entry in dataTab5 | orderBy:sortTypeCont:sortReverse | filter:searchContacts">
+						<td class="middle">
+							<i ng-if="entry.cat == 1" id="contactUser" class="fas fa-user" title="Individual"></i>
+							<i ng-if="entry.cat == 2" id="contactTeam" class="fas fa-users" title="Team"></i>
+							<i ng-if="entry.loc == 1" id="contactUser" class="fas fa-industry" title="Internal"></i>
+							<i ng-if="entry.loc == 2" id="contactTeam" class="fas fa-external-link-alt" title="External"></i>							
+						</td>
+						<td>{{ entry.name }}</td>
+						<td>{{ entry.tel }}</td>
+						<td>{{ entry.mob }}</td>
+						<td>{{ entry.email }}</td>
+					 </tr>
+				</tbody>
+				</table>				
+			</div>
+<!--------------------------------------------------------------------------------------------------- SETTINGS PAGE  -->			
+			<div class="box" id="boxTab6">
+				<div class="sectionHeader"><h1><i class="fas fa-wrench"></i> {{ tabConfig[6].label }}</h1></div>
+					
+					<form class="form-inline" action="/action_page.php">
+					  <div class="form-group">
+						<label for="email">Email address:</label>
+						<input type="email" class="form-control" id="email">
+						<br />
+					  </div>
+					  <div class="form-group">
+						<label for="pwd">Password:</label>
+						<input type="password" class="form-control" id="pwd">
+						<br />
+					  </div>
+					  <div class="checkbox">
+						<label><input type="checkbox"> Remember me</label>
+					  </div>
+					  <button type="submit" class="btn btn-default">Submit</button>
+					</form>
+			</div>			
+		</div>	
+	</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="pageFooter">
+				<p>Personal Dashboard - Version: {{ dashVer() }} - Created by <a href="https://github.com/themattprime">Matt Prime</a> 2019</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

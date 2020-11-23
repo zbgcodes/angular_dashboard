@@ -1,0 +1,106 @@
+/* CSS RESET */
+		html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline;}
+		article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}
+		body {line-height: 1;}
+		ol, ul {list-style: none;}
+		blockquote, q {quotes: none;}
+		blockquote:before, blockquote:after, q:before, q:after {content: ''; content: none;}
+		table {border-collapse: collapse; border-spacing: 0;}
+		/* CSS RESET END */
+		
+		/* GLOBAL VARIABLES */
+		:root {
+			--page-bg: linear-gradient(180deg, #22C1C3 0%, #FDBB2D 100%) fixed;
+			--main-color: #00A294;
+			--accent-color: #FDBB2D;
+			--link-color: #6E4C01;
+			--table-odd: rgba(241, 241, 241, 0.5);
+			--table-even: rgba(255, 255, 255, 0.5);
+			--clock-color: #FDFDFD;
+			--header-text: #FDFDFD;
+			--accordion-text: #FDFDFD;
+		}
+		
+		/* BODY */
+		body {font-family:'Roboto Slab';background:var(--page-bg);}
+		a {color:var(--link-color) !important;}
+		h1 {font-size:1.6em;padding-bottom:12px;color:var(--header-text);text-decoration: none;text-shadow: 0px 2px 0px rgba(0,0,0, .35);}
+		h3 {display:block;font-size:1.1em;height:50px;margin-left:10px;}
+		.small {font-size:0.4em;}
+		.grid {display:block;width:100%;overflow:auto;}
+		label {font-size:1.4em;color:var(--header-text);text-decoration: none;text-shadow: 0px 2px 0px rgba(0,0,0, .35);}
+		
+		/* PAGE HEADER - TITLE */
+		.dashTitle {font-size:3em;height:200px;vertical-align:middle;padding:15px;}
+		
+		/* PAGE HEADER - NAVBAR ICONS */
+		#btnboxTab0 a:before {font-family:"Font Awesome 5 Free";content:"\f015";display:inline-block;padding:0 10px 0 6px;vertical-align: middle;font-weight: 600;}
+		#btnboxTab1 a:before {font-family:"Font Awesome 5 Free";content:"\f03a";display:inline-block;padding:0 10px 0 6px;vertical-align: middle;font-weight: 600;}
+		#btnboxTab2 a:before {font-family:"Font Awesome 5 Free";content:"\f5dc";display:inline-block;padding:0 10px 0 6px;vertical-align: middle;font-weight: 600;}
+		#btnboxTab3 a:before {font-family:"Font Awesome 5 Free";content:"\f02d";display:inline-block;padding:0 10px 0 6px;vertical-align: middle;font-weight: 600;}
+		#btnboxTab4 a:before {font-family:"Font Awesome 5 Free";content:"\f19d";display:inline-block;padding:0 10px 0 6px;vertical-align: middle;font-weight: 600;}
+		#btnboxTab5 a:before {font-family:"Font Awesome 5 Free";content:"\f0c1";display:inline-block;padding:0 10px 0 6px;vertical-align: middle;font-weight: 600;}
+		#btnboxTab6 a:before {font-family:"Font Awesome 5 Free";content:"\f095";display:inline-block;padding:0 10px 0 6px;vertical-align: middle;font-weight: 600;}
+		#btnboxTab7 a:before {font-family:"Font Awesome 5 Free";content:"\f188";display:inline-block;padding:0 10px 0 6px;vertical-align: middle;font-weight: 600;}
+		
+		/* PAGE CONTENT - HIDE SECTIONS INITIALLY */
+		#boxTab1,#boxTab2,#boxTab3,#boxTab4,#boxTab5,#boxTab6,#boxModal {display:none;}
+			
+		/* PAGE CONTENT - SECTIONS */
+		.sectionTitle {height:32px;padding:0 0 0 10px;margin:0;vertical-align:middle;line-height:30px;}
+		.sectionHeader {height:50px;margin:0 0 15px 0;padding:0;color:var(--header-text);text-decoration: none;text-shadow: 0px 2px 0px rgba(0,0,0, .35);border-bottom:2px dotted #fdfdfd;}
+		.sectionHeaderLeft {width:50%;float:left;}
+		.sectionHeaderRight {width:50%;float:left;text-align:right;}
+		.subHeading {margin:0 0 10px 0;padding:5px 0;color:var(--header-text);text-decoration: none;text-shadow: 0px 2px 0px rgba(0,0,0, .35);}
+		#button {font-style:normal;}
+		#spacer {display:block;height:20px;}
+		#bold {font-weight:bold;}
+		
+		/* PAGE CONTENT - QUICKLINKS */
+		.quickLinkContainer {width:100%;align:center;margin:0 auto;}
+		.quickLinkItem {float:left;width:10%;height:90px;margin:5px;padding:10px;border:1px solid var(--accent-color);background:var(--accent-color);border-radius:10px;text-align:center;}
+		p.clear {clear: both;}
+		.quickLinkContainer i {font-family:"Font Awesome 5 Free";display:inline-block;padding:0 0 10px 0;vertical-align: middle;font-weight: 600;}
+			
+		/* PAGE CONTENT - TABLES */
+		.box {margin:0;padding:0;border:0;}
+		.box table {border-collapse:collapse;border-spacing:0;margin:0;width:100%;}
+		.box td, th {border:0;padding:0 0 0 5px;}
+		.box thead {background:var(--accent-color);line-height:40px;}
+		#tableRow {width:100%;padding:10px 0;}
+		#tableRow p {width:100%;}
+		#tableRow td {width:100%/5;font-size:0.95em;padding:10px 5px;}		
+		#tableRow:nth-child(odd) { background-color:var(--table-odd);}
+		#tableRow:nth-child(even) { background-color:var(--table-even);}
+		#tableCen {text-align:center;}
+
+		/* PAGE CONTENT - MODALS */
+		.kbModalIssue {margin:0;}
+		.kbModalIssue p {font-weight:bold;}
+		.kbModalSolution {margin:10px 0 0 0;}
+		.kbModalSolution p {font-weight:bold;}
+		.kbModalLink {margin:20px 0 0 0;}
+		.kbModalLink p {font-weight:bold;}		
+		
+		/* PAGE CONTENT - dataTab3 */
+		.prev {font-size:0.8em;font-style: italic;padding:5px 0;}
+		#tOverdueTrue {color:red;}
+		#tOverdueFalse {color:green;}
+				
+		/* PAGE CONTENT - CONTACTS */
+		.middle {text-align:center;}
+				
+		/* PAGE CONTENT - TO DO LIST */
+		#priority-low {background-color:#ff3333;color:#fff;}
+		#priority-med {background-color:#ffbf00;color:#000;}
+		#priority-high {background-color:#4dff4d;color:#000;}
+		#rag1 {color:#ff3333;}
+		#rag2 {color:#ffbf00;}
+		#rag3 {color:#4dff4d;}
+		#statusNS {text-decoration:none;color:red;} /* not started */
+		#statusIP {text-decoration:none;color:darkorange;} /* in progress */
+		#statusCP {text-decoration:none;color:green;} /* completed */
+		#toDoDesc {height:300px;}
+		
+		/* PAGE FOOTER */
+		.pageFooter {padding:40px 0;text-align:center;}
